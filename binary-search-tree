@@ -1,0 +1,171 @@
+#include <iostream>
+using namespace  std;
+
+//BS
+
+//BST - pravilo desno dijete je vece od roditelja, a lijevo diejte manje od roditelja
+
+template <class T>
+class BSCvor
+{
+	
+	
+
+public:
+	BSCvor* lijevoDijete = nullptr;
+	BSCvor* desnoDijete = nullptr;
+	T info;
+	BSCvor(T info)
+	{
+		this->info = info;
+	}
+
+
+};
+ostream& operator<<(ostream& out, const BSCvor<int>& x)
+{
+	out << x.info;
+	return out;
+}
+
+class BST
+{
+	BSCvor<int>* korijen;
+	bool rekurzija_dodaj(BSCvor<int>*& p, int x)
+	{
+		if (p == nullptr)
+		{
+			//
+			p = new BSCvor<int>(x);
+			return true;
+		}
+
+		if (p->info == x)
+		{
+			return false;
+		}
+
+		if (p->info > x)
+		{
+			//idemo lijevo
+			return rekurzija_dodaj(p->lijevoDijete, x);
+		}
+		else
+		{
+			//idemo desno
+			return rekurzija_dodaj(p->desnoDijete, x);
+		}
+	}
+	void rekurzija_recikliraj(BSCvor<int>*& p)
+	{
+		if (p != nullptr)
+		{
+			rekurzija_recikliraj(p->desnoDijete);
+			rekurzija_recikliraj(p->lijevoDijete);
+			cout << " obrisano " << p->info << endl;
+			delete p;
+			p = nullptr;
+		}
+	}
+
+	BSCvor<int>* rekurzija_trazi(BSCvor<int>* p, int x)
+	{
+		if (p == nullptr)
+			return nullptr;
+
+		if (p->info == x)
+			return p;
+
+		if (p->info > x)
+			return rekurzija_trazi(p->lijevoDijete, x);
+
+		if (p->info < x)
+			return rekurzija_trazi(p->desnoDijete, x);
+	}
+
+public:
+	BST()
+	{
+		korijen = nullptr;
+	}
+	
+
+	bool dodaj(int x)
+	{
+		if (korijen == nullptr)
+		{
+			korijen = new BSCvor<int>(x);
+			return true;
+		}
+
+		return rekurzija_dodaj(korijen, x);
+	}
+	
+
+	BSCvor<int>* trazi(int x)
+	{
+		return rekurzija_trazi(korijen, x);
+	}
+
+	bool ukloni(int x)
+	{
+		return true;
+	}
+
+	void recikliraj()
+	{
+		cout << "Dealokacija pocetak" << endl;
+		rekurzija_recikliraj(korijen);
+		cout << "Dealokacija gotova" << endl;
+	}
+	
+	~BST()
+	{
+		recikliraj();
+	}
+};
+
+
+
+
+void main()
+{
+	BST A;
+	BST B;
+
+	srand(unsigned(time(0)));
+	for (int i = 0; i < 10; i++)
+	{
+		int u = rand()%100;
+		cout << "Dodat broj: " << u<<endl;
+		A.dodaj(u);
+	}
+
+	int x;
+	cout << "Unesite broj x: " << endl;
+	cin >> x;
+
+	BSCvor<int>* r = A.trazi(x);
+	if (r !=nullptr)
+	{
+		cout << "broj je pronadjen: " << endl;
+		if (r->lijevoDijete != nullptr)
+			cout << "lijevo dijete: " << *(r->lijevoDijete)<<endl;
+		if (r->desnoDijete !=nullptr)
+			cout << "desno dijete: " << *(r->desnoDijete) << endl;
+	}
+	else
+	{
+		cout << "broj nije pronadjen: " << endl;
+	}
+
+	A.recikliraj();
+	for (int i = 0; i < 10; i++)
+	{
+		int u = rand() % 100;
+		cout << "Dodat broj: " << u << endl;
+		A.dodaj(u);
+	}
+	
+	
+}
